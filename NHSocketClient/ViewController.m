@@ -6,6 +6,8 @@
 //  Copyright © 2016年 hu jiaju. All rights reserved.
 //
 
+#define PBFormat(format, ...) [NSString stringWithFormat:format,##__VA_ARGS__]
+
 #import "ViewController.h"
 
 typedef enum {
@@ -25,6 +27,7 @@ typedef enum {
 @property (nonatomic, assign) BOOL isConnected;
 @property (nonatomic, assign) NSInteger personIndex;
 @property (nonatomic, strong) NSPopUpButton *userPop,*protocolPop;
+@property (nonatomic, assign) CGFloat infoWidth;
 
 @property (nonatomic, strong) GCDAsyncUdpSocket *udpServer;
 @property (nonatomic, strong) GCDAsyncSocket *tcpServer;
@@ -146,6 +149,7 @@ typedef enum {
     }];
     self.msgTable = table;
     self.container = container;
+    self.infoWidth = self.msgTable.bounds.size.width;
     
     NSTextField *textv = [NSTextField new];
     textv.backgroundColor = [NSColor lightGrayColor];
@@ -345,6 +349,10 @@ typedef enum {
     NSLog(@"didSendDataWithTag--%zd",tag);
 }
 
+- (void)udpSocket:(GCDAsyncUdpSocket *)sock didNotSendDataWithTag:(long)tag dueToError:(NSError *)error {
+    NSLog(@"didNotSendDataWithTag:%zd--error:%@",tag,error.localizedDescription);
+}
+
 - (void)udpSocket:(GCDAsyncUdpSocket *)sock didReceiveData:(NSData *)data fromAddress:(NSData *)address withFilterContext:(id)filterContext {
     NSString *msg = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     NSLog(@"didReceiveData--%@",msg);
@@ -438,29 +446,78 @@ typedef enum {
 
 #pragma mark -- Table Datasource --
 
+#define TEXT_OFFSET     20
+#define TEXT_FONT_SIZE  15
+#define TEXT_FONT    [NSFont fontWithName:@"HelveticaNeue-Light" size:TEXT_FONT_SIZE]
+
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
     return self.dataSource.count;
 }
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row {
-    return 50.f;
+    
+    NSDictionary *tmp = [self.dataSource objectAtIndex:row];
+    NSString *fromer = [tmp objectForKey:@"from"];
+    NSString *info = [tmp objectForKey:@"info"];
+    BOOL fromMe = [fromer isEqualToString:@"me"];
+    NSString *displayInfo = fromMe?PBFormat(@"%@:me",info):PBFormat(@"server:%@",info);
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:TEXT_FONT,NSFontAttributeName, nil];
+    NSSize maxSize = [displayInfo sizeWithAttributes:attributes];;
+    NSLog(@"cell height:%f",maxSize.height+TEXT_OFFSET);
+    return maxSize.height+TEXT_OFFSET;
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     static NSString *identifier = @"cell";
-    NSTextField *view = [self.msgTable makeViewWithIdentifier:identifier owner:self];
-    if (view == nil) {
-        NSRect bounds = NSRectFromCGRect(CGRectMake(0, 0, 200, 50));
-        view = [[NSTextField alloc] initWithFrame:bounds];
-        view.identifier = identifier;
-    }
+    
     NSDictionary *tmp = [self.dataSource objectAtIndex:row];
     NSString *fromer = [tmp objectForKey:@"from"];
     NSString *info = [tmp objectForKey:@"info"];
-    view.backgroundColor = (row%2==0)?[NSColor lightGrayColor]:[NSColor whiteColor];
-    view.stringValue = [NSString stringWithFormat:@"from:%@  info:%@",fromer,info];
-    view.textColor = [NSColor blackColor];
-    return view;
+    BOOL fromMe = [fromer isEqualToString:@"me"];
+    NSView *cell = [tableView makeViewWithIdentifier:identifier owner:self];
+    NSString *displayInfo = fromMe?PBFormat(@"%@:me",info):PBFormat(@"server:%@",info);
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:TEXT_FONT,NSFontAttributeName, nil];
+    NSSize maxSize = [displayInfo sizeWithAttributes:attributes];
+    NSRect bounds ;
+    bounds.origin = CGPointZero;
+    bounds.size = NSMakeSize(maxSize.width, maxSize.height+TEXT_OFFSET);
+    if (cell == nil) {
+        cell = [[NSView alloc] initWithFrame:bounds];
+        cell.identifier = identifier;
+    }
+    [cell.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    
+    NSRect textBounds ;
+    textBounds.origin = CGPointZero;
+    //textBounds.origin = NSMakePoint(fromMe?(tableColumn.width-maxSize.width-TEXT_OFFSET):0, TEXT_OFFSET*0.5);
+    textBounds.size = CGSizeMake(maxSize.width,maxSize.height);
+    NSColor *textColor = fromMe?[NSColor lightGrayColor]:[NSColor blueColor];
+    NSTextField *view = [[NSTextField alloc] initWithFrame:textBounds];
+    view.lineBreakMode = NSLineBreakByCharWrapping;
+    [view setBezeled:NO];
+    [view setDrawsBackground:NO];
+    [view setEditable:NO];
+    [view setSelectable:NO];
+    //view.backgroundColor = fromMe?[NSColor lightGrayColor]:[NSColor whiteColor];
+    view.font = TEXT_FONT;
+    [view setAlignment:fromMe?NSTextAlignmentRight:NSTextAlignmentLeft];
+    view.stringValue = displayInfo;
+    view.textColor = textColor;
+    [cell addSubview:view];
+    view.backgroundColor = [NSColor redColor];
+    NSLog(@"table width :%f",tableColumn.width);
+    [view mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.bottom.equalTo(cell).offset(TEXT_OFFSET*0.5);
+        if (fromMe) {
+            make.right.equalTo(cell).offset(-TEXT_OFFSET*0.5);
+        }
+    }];
+    
+    return cell;
+}
+
+- (void)tableView:(NSTableView *)tableView didClickTableColumn:(NSTableColumn *)tableColumn {
+    
 }
 
 - (void)setRepresentedObject:(id)representedObject {

@@ -1,0 +1,5 @@
+platform :osx, '10.10'
+pod 'CocoaAsyncSocket'
+pod 'Masonry'
+pod 'AFNetworking'
+pod 'MLHudAlert', git: 'https://github.com/MacLabs/MLHudAlert.git'

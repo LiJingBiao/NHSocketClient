@@ -16,6 +16,13 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     // Insert code here to initialize your application
+    
+    NSApplication *app = [NSApplication sharedApplication];
+    NSWindow *window = app.keyWindow;
+    CGSize size = [[NSScreen mainScreen] frame].size;
+    [[window standardWindowButton:NSWindowZoomButton] setEnabled:false];
+    [window setMinSize:CGSizeMake(1000, 500)];
+    
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {

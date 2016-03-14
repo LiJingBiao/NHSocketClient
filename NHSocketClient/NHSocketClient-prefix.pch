@@ -1,0 +1,18 @@
+//
+//  NHSocketClient-prefix.pch
+//  NHSocketClient
+//
+//  Created by hu jiaju on 16/3/11.
+//  Copyright © 2016年 hu jiaju. All rights reserved.
+//
+
+#ifndef NHSocketClient_prefix_pch
+#define NHSocketClient_prefix_pch
+
+#import <Masonry.h>
+#import <AFNetworking.h>
+#import <GCDAsyncSocket.h>
+#import <GCDAsyncUdpSocket.h>
+#import <MLHudAlert.h>
+
+#endif /* NHSocketClient_prefix_pch */

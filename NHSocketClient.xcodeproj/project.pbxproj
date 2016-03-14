@@ -477,6 +477,7 @@
 			baseConfigurationReference = 78F388C6BE530FA6152BA531 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PREFIX_HEADER = "/Users/nanhujiaju/Desktop/PullBearsFolder/demos/NHSocketClient/NHSocketClient/NHSocketClient-prefix.pch";
 				INFOPLIST_FILE = NHSocketClient/Info.plist;
@@ -492,6 +493,7 @@
 			baseConfigurationReference = CBED6FB2CA224C73845F51AC /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PREFIX_HEADER = "/Users/nanhujiaju/Desktop/PullBearsFolder/demos/NHSocketClient/NHSocketClient/NHSocketClient-prefix.pch";
 				INFOPLIST_FILE = NHSocketClient/Info.plist;

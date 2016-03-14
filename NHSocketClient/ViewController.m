@@ -412,7 +412,7 @@ typedef enum {
                 [self.udpServer sendData:data toHost:self.ipServer port:[self.port intValue] withTimeout:-1 tag:_tag];
             }else if (self.type == ProtocolTypeTCP){
                 [self.tcpServer writeData:data withTimeout:-1 tag:_tag];
-                [self readNewMsg];
+                //[self readNewMsg];
             }
             [self alreadySendMsg:info];
             _tag++;

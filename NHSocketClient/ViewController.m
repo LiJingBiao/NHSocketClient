@@ -463,7 +463,7 @@ typedef enum {
     NSString *displayInfo = fromMe?PBFormat(@"%@:me",info):PBFormat(@"server:%@",info);
     NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:TEXT_FONT,NSFontAttributeName, nil];
     NSSize maxSize = [displayInfo sizeWithAttributes:attributes];;
-    NSLog(@"cell height:%f",maxSize.height+TEXT_OFFSET);
+    //NSLog(@"cell height:%f",maxSize.height+TEXT_OFFSET);
     return maxSize.height+TEXT_OFFSET;
 }
 
@@ -505,7 +505,7 @@ typedef enum {
     view.textColor = textColor;
     [cell addSubview:view];
     view.backgroundColor = [NSColor redColor];
-    NSLog(@"table width :%f",tableColumn.width);
+    //NSLog(@"table width :%f",tableColumn.width);
     [view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.bottom.equalTo(cell).offset(TEXT_OFFSET*0.5);
         if (fromMe) {
